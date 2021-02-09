@@ -129,7 +129,64 @@ view: order_items {
     filters: [status: "-cancelled , -returned"]
   }
 
+  measure: total_gross_margin {
+    description: "Total difference between the total revenue from completed sales and the cost of the goods that were sold"
+    type:  number
+    value_format_name: usd
+    sql:  ${total_gross_revenue} - ${inventory_items.total_cost} ;;
+  }
 
+  measure: gross_margin_percent {
+    description: "Total Gross Margin Amount / Total Gross Revenue"
+    type:  number
+    value_format_name: percent_1
+    sql: ${total_gross_margin} / ${total_gross_revenue} ;;
+  }
+
+  measure: average_gross_margin {
+    description: "Average difference between the total revenue from completed sales and the cost of the goods that were sold"
+    type: average
+    value_format_name: usd
+    sql: ${sale_price} - ${inventory_items.cost} ;;
+    filters: [status: "-cancelled , -returned"]
+    }
+
+  measure: number_of_items_returned {
+    description: "Number of items that were returned by dissatisfied customers"
+    type: count
+    filters: [status: "returned"]
+  }
+
+  measure: item_return_rate {
+    description: "Number of Items Returned / total number of items sold"
+    type: number
+    value_format_name: percent_1
+    sql: ${number_of_items_returned}/${count} ;;
+  }
+
+  measure: number_of_customers_returning_items {
+    description: "Number of users who have returned an item at some point"
+    type:  count_distinct
+    sql: ${user_id} ;;
+    filters: [status: "returned"]
+  }
+
+  measure: total_number_of_customers{
+    type: count_distinct
+    sql: ${user_id} ;;
+  }
+
+  measure: percent_of_users_with_returns {
+    type: number
+    value_format_name: percent_1
+    sql: ${number_of_customers_returning_items}/${total_number_of_customers};;
+  }
+
+  measure: average_spend_per_customer {
+    type: number
+    value_format_name: usd
+    sql: ${total_sale_price}/${total_number_of_customers} ;;
+  }
 
   # ----- Sets of fields for drilling ------
   set: detail {

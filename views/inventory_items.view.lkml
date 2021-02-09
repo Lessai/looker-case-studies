@@ -16,13 +16,14 @@ view: inventory_items {
     sql: ${TABLE}."PRODUCT_DISTRIBUTION_CENTER_ID" ;;
   }
 
+
+#----------------- Product Info -----------------#
+
   dimension: product_id {
     type: number
     hidden: yes
     sql: ${TABLE}."PRODUCT_ID" ;;
   }
-
-#----------------- Product Info -----------------#
 
   dimension: product_brand {
     group_label: "Product Info"
@@ -81,6 +82,11 @@ view: inventory_items {
     sql: ${TABLE}."SOLD_AT" ;;
   }
 
+  dimension: is_sold{
+    type: yesno
+    sql: ${sold_raw} IS NOT NULL ;;
+  }
+
   dimension_group: created {
     type: time
     timeframes: [
@@ -98,7 +104,7 @@ view: inventory_items {
 
   #-----------------------MEASURES--------------------#
   measure: count {
-    hidden: yes
+    #hidden: yes
     type: count
     drill_fields: [id, product_name, products.id, products.name, order_items.count]
   }
@@ -107,6 +113,16 @@ view: inventory_items {
     description: "Total cost of items sold from inventory"
     type: sum
     value_format_name: usd
+    filters: [is_sold: "yes"]
     sql: ${cost} ;;
   }
+
+  measure: average_cost {
+    description: "Average cost of items sold from inventory"
+    type: average
+    filters: [is_sold: "yes"]
+    sql: ${cost} ;;
+  }
+
+
 }
