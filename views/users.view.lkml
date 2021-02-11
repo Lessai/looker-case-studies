@@ -1,10 +1,12 @@
 view: users {
+  label: "customers"
   sql_table_name: "PUBLIC"."USERS"
     ;;
   drill_fields: [id]
 
   dimension: id {
     primary_key: yes
+    hidden: yes
     type: number
     sql: ${TABLE}."ID" ;;
   }

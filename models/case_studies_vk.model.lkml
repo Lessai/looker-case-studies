@@ -4,39 +4,17 @@ connection: "snowlooker"
 include: "/views/**/*.view"
 
 datagroup: case_studies_vk_default_datagroup {
-  # sql_trigger: SELECT MAX(id) FROM etl_log;;
-  max_cache_age: "1 hour"
+  sql_trigger: SELECT count(*) FROM order_items;;
+  max_cache_age: "24 hours"
 }
 
 persist_with: case_studies_vk_default_datagroup
 
-explore: distribution_centers {}
-
-explore: etl_jobs {}
-
-explore: events {
-  join: users {
-    type: left_outer
-    sql_on: ${events.user_id} = ${users.id} ;;
-    relationship: many_to_one
-  }
-}
-
-explore: inventory_items {
-  join: products {
-    type: left_outer
-    sql_on: ${inventory_items.product_id} = ${products.id} ;;
-    relationship: many_to_one
-  }
-
-  join: distribution_centers {
-    type: left_outer
-    sql_on: ${products.distribution_center_id} = ${distribution_centers.id} ;;
-    relationship: many_to_one
-  }
-}
+#-------------------- ORDER ITEMS ----------------------
 
 explore: order_items {
+  persist_with: case_studies_vk_default_datagroup
+
   join: users {
     type: left_outer
     sql_on: ${order_items.user_id} = ${users.id} ;;
@@ -62,12 +40,6 @@ explore: order_items {
   }
 }
 
-explore: products {
-  join: distribution_centers {
-    type: left_outer
-    sql_on: ${products.distribution_center_id} = ${distribution_centers.id} ;;
-    relationship: many_to_one
-  }
+explore: users {
+  label: "Customers"
 }
-
-explore: users {}

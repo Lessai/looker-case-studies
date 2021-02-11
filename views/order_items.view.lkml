@@ -92,6 +92,11 @@ view: order_items {
     sql: ${TABLE}."USER_ID" ;;
   }
 
+  dimension: is_yesterday {
+    type: yesno
+    sql:  ${created_raw} == DATEADD(Day ,-1, current_date) ;;
+  }
+
   measure: count {
     hidden: yes
     type: count
@@ -186,6 +191,14 @@ view: order_items {
     type: number
     value_format_name: usd
     sql: ${total_sale_price}/${total_number_of_customers} ;;
+  }
+
+  measure: total_revenue_yesterday {
+    description: "Total yesterday's revenue from completed sales (cancelled and returned orders excluded)"
+    type: sum
+    value_format_name: usd
+    sql: ${sale_price} ;;
+    filters: [status: "-cancelled , -returned", is_yesterday: "yes"]
   }
 
   # ----- Sets of fields for drilling ------
